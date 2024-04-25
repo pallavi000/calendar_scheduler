@@ -11,3 +11,7 @@ export function getHolidaysApiService(data: TPublicHolidayInputData) {
     `https://date.nager.at/api/v3/PublicHolidays/${data.year}/${data.countryIsoCode}`
   );
 }
+
+export function getAvailableCountriesApiService() {
+  return axios.get(`https://date.nager.at/api/v3/AvailableCountries`);
+}

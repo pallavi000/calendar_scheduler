@@ -15,60 +15,47 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { Avatar, Button, Stack } from "@mui/material";
+import { Autocomplete, Avatar, Button, Stack, TextField } from "@mui/material";
 import ThemeModeSwitch from "../components/ThemeModeSwitch";
 import { useGlobalContext } from "../global/GlobalContextProvider";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
-
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
+import { convertCountryResponseToOption } from "../utils/helper";
+import { TCountryCode } from "../@types/common";
 
 export default function Navbar() {
-  const { user, logoutUser } = useGlobalContext();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const {
+    user,
+    logoutUser,
+    availableCountries,
+    availableTimezones,
+    selectedCountry,
+    setSelectedCountry,
+    setSelectedTimezone,
+    selectedTimezone,
+  } = useGlobalContext();
 
+  // country select options
+  const availableCountriesOptions = React.useMemo(
+    () =>
+      availableCountries.map((country) =>
+        convertCountryResponseToOption(country)
+      ),
+    [availableCountries]
+  );
+  const selectedCountryOption = React.useMemo(() => {
+    const country =
+      availableCountries.find(
+        (country) => country.countryCode === selectedCountry
+      ) || availableCountries[0];
+    return convertCountryResponseToOption(country);
+  }, [availableCountries, selectedCountry]);
+
+  // toggle options
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -185,15 +172,42 @@ export default function Navbar() {
               Calendar
             </Typography>
           </Stack>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
+
+          <Stack direction={"row"} alignItems={"center"} spacing={4}>
+            <Autocomplete
+              disablePortal
+              disableClearable
+              autoHighlight
+              value={selectedCountryOption}
+              sx={{ width: 300 }}
+              size="small"
+              options={availableCountriesOptions}
+              onChange={(event, newInputValue) => {
+                if (!newInputValue) return;
+                setSelectedCountry(newInputValue?.value as TCountryCode);
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="Select Country" />
+              )}
             />
-          </Search>
+
+            <Autocomplete
+              disablePortal
+              disableClearable
+              autoHighlight
+              value={selectedTimezone}
+              sx={{ width: 300 }}
+              size="small"
+              options={availableTimezones}
+              renderInput={(params) => (
+                <TextField {...params} label="Select Timezone" />
+              )}
+              onInputChange={(event, newInputValue) => {
+                setSelectedTimezone(newInputValue);
+              }}
+            />
+          </Stack>
+
           <Box sx={{ flexGrow: 1 }} />
           <Box
             sx={{ display: { xs: "none", md: "flex", alignItems: "center" } }}

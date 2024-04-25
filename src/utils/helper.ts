@@ -1,21 +1,30 @@
+import moment from "moment";
 import { TEvent, TPublicHolidayResponse } from "../@types/events";
+import timezoneData from "../data/timezone.json";
+import { TCountryCode, TCountryResponse, TTimezone } from "../@types/common";
+
+export function getFormatDate(date: Date): string {
+  return moment(date).format("YYYY-MM-DD");
+}
 
 export function getStartOfYear(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  return `${year}-01-01`;
+  return moment().startOf("year").format("YYYY-MM-DD");
 }
 
 export function getEndOfYear(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  return `${year}-12-31`;
+  return moment().endOf("year").format("YYYY-MM-DD");
 }
 
 export function getCurrentYear(): string {
-  const today = new Date();
-  const year = today.getFullYear().toString();
-  return year;
+  return moment().format("YYYY");
+}
+
+export function getMonthAndDay(date: Date): string {
+  return moment(date).format("MMM D");
+}
+
+export function getTime(date: Date): string {
+  return moment(date).format("hh:mm A");
 }
 
 export function convertPublicHolidaysToEvents(
@@ -25,4 +34,19 @@ export function convertPublicHolidaysToEvents(
     title: holiday.name,
     start: holiday.date,
   }));
+}
+
+export function getTimezonesFromCountry(
+  countryCode: TCountryCode
+): TTimezone[] {
+  const timezones = timezoneData[countryCode];
+  if (timezones && timezones.length) return timezones as TTimezone[];
+  return timezoneData["ALL"];
+}
+
+export function convertCountryResponseToOption(country: TCountryResponse) {
+  return {
+    label: country.name,
+    value: country.countryCode,
+  };
 }

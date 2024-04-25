@@ -1,4 +1,9 @@
-import { TThemeMode } from "./common";
+import {
+  TCountryCode,
+  TCountryResponse,
+  TThemeMode,
+  TTimezone,
+} from "./common";
 import { TUser } from "./user";
 
 export type TGlobalContextStates = {
@@ -8,4 +13,10 @@ export type TGlobalContextStates = {
   themeMode: TThemeMode;
   toggleThemeMode: () => void;
   logoutUser: () => void;
+  availableCountries: TCountryResponse[];
+  availableTimezones: TTimezone[];
+  selectedCountry: TCountryCode;
+  setSelectedCountry: (country: TCountryCode) => void;
+  selectedTimezone: TTimezone;
+  setSelectedTimezone: (timezone: TTimezone) => void;
 };
