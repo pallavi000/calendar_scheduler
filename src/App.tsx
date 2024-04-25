@@ -4,6 +4,9 @@ import "./App.css";
 import AppLayout from "./layouts/AppLayout";
 import GlobalContextProvider from "./global/GlobalContextProvider";
 import ThemeProvider from "./theme/ThemeProvider";
+import SignIn from "./pages/auth/SignIn";
+import Register from "./pages/auth/Register";
+import UserProtected from "./global/UserProtected";
 
 function App() {
   return (
@@ -11,8 +14,16 @@ function App() {
       <GlobalContextProvider>
         <ThemeProvider>
           <Routes>
+            {/* app layout */}
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Home />} />
+              {/* public routes */}
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/register" element={<Register />} />
+
+              {/* user protected routes */}
+              <Route element={<UserProtected />}>
+                <Route path="/" element={<Home />} />
+              </Route>
             </Route>
           </Routes>
         </ThemeProvider>

@@ -9,15 +9,16 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { Stack } from "@mui/material";
+import { Avatar, Button, Stack } from "@mui/material";
 import ThemeModeSwitch from "../components/ThemeModeSwitch";
+import { useGlobalContext } from "../global/GlobalContextProvider";
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -60,6 +61,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const { user, logoutUser } = useGlobalContext();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -104,6 +106,7 @@ export default function Navbar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={logoutUser}>Logout</MenuItem>
     </Menu>
   );
 
@@ -196,26 +199,54 @@ export default function Navbar() {
             sx={{ display: { xs: "none", md: "flex", alignItems: "center" } }}
           >
             <ThemeModeSwitch />
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+
+            {user ? (
+              <>
+                <IconButton
+                  size="large"
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                >
+                  <Badge badgeContent={17} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <Avatar
+                    src={user.avatar}
+                    alt="user avatar"
+                    sx={{ width: 36, height: 36 }}
+                  />
+                </IconButton>
+              </>
+            ) : (
+              <Stack direction={"row"} alignItems={"center"} spacing={2} ml={4}>
+                {/* <ThemeModeSwitch /> */}
+                <Button
+                  sx={{ color: "text.primary" }}
+                  variant="outlined"
+                  href="/auth/sign-in"
+                >
+                  Login
+                </Button>
+                <Button
+                  color="success"
+                  variant="text"
+                  href="/auth/register"
+                  endIcon={<DoubleArrowIcon />}
+                >
+                  Sign up
+                </Button>
+              </Stack>
+            )}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
