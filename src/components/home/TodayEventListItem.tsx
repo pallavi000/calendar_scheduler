@@ -24,9 +24,13 @@ import { deleteEventApiService } from "../../services/eventApiService";
 
 type TodayEventListItemProps = {
   event: TEvent;
+  handleEventEditClick: (event: TEvent) => void;
 };
 
-function TodayEventListItem({ event }: TodayEventListItemProps) {
+function TodayEventListItem({
+  event,
+  handleEventEditClick,
+}: TodayEventListItemProps) {
   const { selectedTimezone } = useGlobalContext();
   const theme = useTheme();
 
@@ -40,8 +44,6 @@ function TodayEventListItem({ event }: TodayEventListItemProps) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const handleEventEdit = () => {};
 
   const handleDeleteEvent = async () => {
     try {
@@ -94,7 +96,12 @@ function TodayEventListItem({ event }: TodayEventListItemProps) {
       </ListItem>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            handleEventEditClick(event);
+          }}
+        >
           <ListItemIcon>
             <Edit fontSize="small" />
           </ListItemIcon>

@@ -4,14 +4,17 @@ import { Add } from "@mui/icons-material";
 import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TNewEventFormData } from "../../@types/events";
+import { TEvent, TNewEventFormData } from "../../@types/events";
 import moment from "moment-timezone";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 import {
   apiErrorNotification,
   customSuccessNotification,
 } from "../Notification";
-import { createNewEventApiService } from "../../services/eventApiService";
+import {
+  createNewEventApiService,
+  updateEventApiService,
+} from "../../services/eventApiService";
 import EventForm from "./EventForm";
 
 // Define validation schema using Yup
@@ -23,14 +26,13 @@ const schema = yup.object().shape({
   participants: yup.string().required("Participant name is required"),
 });
 
-export default function NewEventModal() {
+export type UpdateEventModalProps = {
+  event: TEvent;
+};
+
+export default function UpdateEventModal({ event }: UpdateEventModalProps) {
   const { selectedTimezone } = useGlobalContext();
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
     setOpen(false);
@@ -38,30 +40,20 @@ export default function NewEventModal() {
 
   const methods = useForm<TNewEventFormData>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      title: event.title,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      description: event.description,
+      participants: event.participants,
+    },
   });
-  const { setValue } = methods;
-
-  React.useEffect(() => {
-    if (selectedTimezone) {
-      setValue("startTime", moment.tz(selectedTimezone).format());
-      setValue("endTime", moment.tz(selectedTimezone).format());
-    }
-  }, [selectedTimezone]);
-
-  const resetFormValues = () => {
-    setValue("title", "");
-    setValue("description", "");
-    setValue("participants", "");
-    setValue("startTime", moment.tz(selectedTimezone).format());
-    setValue("endTime", moment.tz(selectedTimezone).format());
-  };
 
   const onSubmit = async (data: TNewEventFormData) => {
     try {
-      const response = await createNewEventApiService(data);
-      resetFormValues();
+      const response = await updateEventApiService(event.id, data);
       handleClose();
-      customSuccessNotification("Event added successfully.");
+      customSuccessNotification("Event updated successfully.");
     } catch (error) {
       apiErrorNotification(error);
     }
@@ -69,17 +61,9 @@ export default function NewEventModal() {
 
   return (
     <React.Fragment>
-      <Button
-        variant="contained"
-        size="small"
-        endIcon={<Add />}
-        onClick={handleClickOpen}
-      >
-        New Event
-      </Button>
       <FormProvider {...methods}>
         <EventForm
-          title="Create New Event"
+          title="Update Event"
           isOpen={open}
           handleClose={handleClose}
           onSubmit={onSubmit}

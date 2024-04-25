@@ -1,5 +1,11 @@
 import { TEvent, TNewEventFormData } from "../@types/events";
 
+export function getAllEventsApiService() {
+  const data = localStorage.getItem("events");
+  if (data) return { data: JSON.parse(data) };
+  return { data: [] };
+}
+
 export function createNewEventApiService(data: TNewEventFormData) {
   const previousData = getAllEventsApiService();
   const eventData: TEvent = {
@@ -14,10 +20,13 @@ export function createNewEventApiService(data: TNewEventFormData) {
   );
 }
 
-export function getAllEventsApiService() {
-  const data = localStorage.getItem("events");
-  if (data) return { data: JSON.parse(data) };
-  return { data: [] };
+export function updateEventApiService(id: number, newData: TNewEventFormData) {
+  const { data } = getAllEventsApiService();
+  const index = data.findIndex((event: TEvent) => event.id === id);
+  if (index !== -1) {
+    data[index] = { ...data[index], ...newData };
+  }
+  return localStorage.setItem("events", JSON.stringify(data));
 }
 
 export function deleteEventApiService(id: number) {

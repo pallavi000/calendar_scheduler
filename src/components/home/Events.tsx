@@ -13,16 +13,24 @@ import { getFormatDate, getMonthAndDay } from "../../utils/helper";
 import { TEvent } from "../../@types/events";
 import TodayEventListItem from "./TodayEventListItem";
 import NewEventModal from "./NewEventModal";
+import { useState } from "react";
+import UpdateEventModal from "./UpdateEventModal";
 
 type EventsProps = {
   events: TEvent[];
 };
 
 function Events({ events }: EventsProps) {
+  const [activeEvent, setActiveEvent] = useState<TEvent>();
+
   const TODAY = new Date();
   const todayEvents = events.filter((evt) =>
     evt.startTime.includes(getFormatDate(TODAY))
   );
+
+  const handleEventEditClick = (event: TEvent) => {
+    setActiveEvent(event);
+  };
 
   return (
     <>
@@ -34,6 +42,7 @@ function Events({ events }: EventsProps) {
       >
         <Typography variant="h6">Today, {getMonthAndDay(TODAY)}</Typography>
         <NewEventModal />
+        {activeEvent ? <UpdateEventModal event={activeEvent} /> : null}
       </Stack>
       <Divider sx={{ my: 3 }} />
       <Stack>
@@ -50,6 +59,7 @@ function Events({ events }: EventsProps) {
                   <TodayEventListItem
                     key={todayEvent.title}
                     event={todayEvent}
+                    handleEventEditClick={handleEventEditClick}
                   />
                 );
               })}

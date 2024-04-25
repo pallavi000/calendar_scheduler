@@ -20,14 +20,15 @@ import { TEvent, TNewEventFormData } from "../../@types/events";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 
 type EventFormProps = {
+  title: string;
   isOpen: boolean;
   handleClose: () => void;
   onSubmit: (data: TNewEventFormData) => void;
 };
 
-function EventForm({ isOpen, handleClose, onSubmit }: EventFormProps) {
+function EventForm({ isOpen, handleClose, onSubmit, title }: EventFormProps) {
   const { selectedTimezone } = useGlobalContext();
-  const { control, formState, setValue, handleSubmit } =
+  const { control, formState, setValue, handleSubmit, watch } =
     useFormContext<TNewEventFormData>();
   const { errors } = formState;
 
@@ -43,7 +44,7 @@ function EventForm({ isOpen, handleClose, onSubmit }: EventFormProps) {
         onSubmit: handleSubmit(onSubmit),
       }}
     >
-      <DialogTitle>Create New Event</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}
@@ -79,7 +80,7 @@ function EventForm({ isOpen, handleClose, onSubmit }: EventFormProps) {
               dateLibInstance={moment}
             >
               <DateTimePicker
-                defaultValue={moment.tz(selectedTimezone)}
+                defaultValue={moment.tz(watch("startTime"), selectedTimezone)}
                 onChange={(value) => {
                   if (value) {
                     setValue("startTime", value?.format());
@@ -96,7 +97,7 @@ function EventForm({ isOpen, handleClose, onSubmit }: EventFormProps) {
               dateLibInstance={moment}
             >
               <DateTimePicker
-                defaultValue={moment.tz(selectedTimezone)}
+                defaultValue={moment.tz(watch("startTime"), selectedTimezone)}
                 onChange={(value) => {
                   if (value) {
                     setValue("endTime", value?.format());
