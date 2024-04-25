@@ -16,6 +16,7 @@ export type TPublicHolidayResponse = {
 };
 
 export type TEvent = {
+  id: number;
   title: string;
   startTime: string;
   endTime?: string;

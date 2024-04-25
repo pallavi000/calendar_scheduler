@@ -9,12 +9,18 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { TEvent } from "../../@types/events";
 import { getTime } from "../../utils/helper";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 import moment from "moment-timezone";
+import ConfirmModal from "../ConfirmModal";
+import {
+  apiErrorNotification,
+  customSuccessNotification,
+} from "../Notification";
+import { deleteEventApiService } from "../../services/eventApiService";
 
 type TodayEventListItemProps = {
   event: TEvent;
@@ -22,12 +28,9 @@ type TodayEventListItemProps = {
 
 function TodayEventListItem({ event }: TodayEventListItemProps) {
   const { selectedTimezone } = useGlobalContext();
-  console.log(
-    new Date(moment.tz(event.startTime, selectedTimezone).format()),
-    "-------------",
-    new Date()
-  );
   const theme = useTheme();
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -40,7 +43,14 @@ function TodayEventListItem({ event }: TodayEventListItemProps) {
 
   const handleEventEdit = () => {};
 
-  const handleDeleteEvent = () => {};
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEventApiService(event.id);
+      customSuccessNotification("event deleted successfully!");
+    } catch (error) {
+      apiErrorNotification(error);
+    }
+  };
 
   return (
     <>
@@ -92,7 +102,12 @@ function TodayEventListItem({ event }: TodayEventListItemProps) {
             Edit
           </ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            setIsDeleteModalOpen(true);
+          }}
+        >
           <ListItemIcon>
             <Delete fontSize="small" />
           </ListItemIcon>
@@ -101,6 +116,13 @@ function TodayEventListItem({ event }: TodayEventListItemProps) {
           </ListItemText>
         </MenuItem>
       </Menu>
+      <ConfirmModal
+        title="Delete this event?"
+        description="By deleting this event, it will be permanently removed from your calendar. Make sure to confirm if you want to proceed, as this action cannot be undone. Consider reviewing the details before deletion to avoid unintentional removal of important appointments or meetings."
+        open={isDeleteModalOpen}
+        handleClose={() => setIsDeleteModalOpen(false)}
+        onSubmit={handleDeleteEvent}
+      />
     </>
   );
 }
