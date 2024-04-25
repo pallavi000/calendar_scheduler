@@ -27,6 +27,7 @@ export function convertPublicHolidaysToEvents(
   holidays: TPublicHolidayResponse[]
 ): TEvent[] {
   return holidays.map((holiday) => ({
+    id: 1,
     title: holiday.name,
     startTime: holiday.date,
   }));

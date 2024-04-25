@@ -1,4 +1,9 @@
-import { Delete, Edit, NotificationsActive } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  NotificationsActive,
+  RemoveRedEye,
+} from "@mui/icons-material";
 import {
   IconButton,
   ListItem,
@@ -14,27 +19,22 @@ import { TEvent } from "../../@types/events";
 import { getTime } from "../../utils/helper";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
-import moment from "moment-timezone";
-import ConfirmModal from "../ConfirmModal";
-import {
-  apiErrorNotification,
-  customSuccessNotification,
-} from "../Notification";
-import { deleteEventApiService } from "../../services/eventApiService";
 
 type TodayEventListItemProps = {
   event: TEvent;
+  handleEventViewClick: (event: TEvent) => void;
   handleEventEditClick: (event: TEvent) => void;
+  handleEventDeleteClick: (event: TEvent) => void;
 };
 
 function TodayEventListItem({
   event,
+  handleEventViewClick,
   handleEventEditClick,
+  handleEventDeleteClick,
 }: TodayEventListItemProps) {
   const { selectedTimezone } = useGlobalContext();
   const theme = useTheme();
-
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -43,15 +43,6 @@ function TodayEventListItem({
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleDeleteEvent = async () => {
-    try {
-      await deleteEventApiService(event.id);
-      customSuccessNotification("event deleted successfully!");
-    } catch (error) {
-      apiErrorNotification(error);
-    }
   };
 
   return (
@@ -99,7 +90,20 @@ function TodayEventListItem({
         <MenuItem
           onClick={() => {
             handleClose();
-            handleEventEditClick(event);
+            handleEventViewClick(event);
+          }}
+        >
+          <ListItemIcon>
+            <RemoveRedEye fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primaryTypographyProps={{ fontSize: 14 }}>
+            View
+          </ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            handleEventViewClick(event);
           }}
         >
           <ListItemIcon>
@@ -112,7 +116,7 @@ function TodayEventListItem({
         <MenuItem
           onClick={() => {
             handleClose();
-            setIsDeleteModalOpen(true);
+            handleEventDeleteClick(event);
           }}
         >
           <ListItemIcon>
@@ -123,13 +127,6 @@ function TodayEventListItem({
           </ListItemText>
         </MenuItem>
       </Menu>
-      <ConfirmModal
-        title="Delete this event?"
-        description="By deleting this event, it will be permanently removed from your calendar. Make sure to confirm if you want to proceed, as this action cannot be undone. Consider reviewing the details before deletion to avoid unintentional removal of important appointments or meetings."
-        open={isDeleteModalOpen}
-        handleClose={() => setIsDeleteModalOpen(false)}
-        onSubmit={handleDeleteEvent}
-      />
     </>
   );
 }

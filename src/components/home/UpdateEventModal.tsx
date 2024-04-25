@@ -28,16 +28,15 @@ const schema = yup.object().shape({
 
 export type UpdateEventModalProps = {
   event: TEvent;
+  isOpen: boolean;
+  handleClose: () => void;
 };
 
-export default function UpdateEventModal({ event }: UpdateEventModalProps) {
-  const { selectedTimezone } = useGlobalContext();
-  const [open, setOpen] = React.useState(true);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+export default function UpdateEventModal({
+  event,
+  isOpen,
+  handleClose,
+}: UpdateEventModalProps) {
   const methods = useForm<TNewEventFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -64,7 +63,7 @@ export default function UpdateEventModal({ event }: UpdateEventModalProps) {
       <FormProvider {...methods}>
         <EventForm
           title="Update Event"
-          isOpen={open}
+          isOpen={isOpen}
           handleClose={handleClose}
           onSubmit={onSubmit}
         />
