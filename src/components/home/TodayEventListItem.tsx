@@ -103,7 +103,7 @@ function TodayEventListItem({
         <MenuItem
           onClick={() => {
             handleClose();
-            handleEventViewClick(event);
+            handleEventEditClick(event);
           }}
         >
           <ListItemIcon>

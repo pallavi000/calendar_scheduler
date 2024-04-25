@@ -4,15 +4,17 @@ import { Add } from "@mui/icons-material";
 import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TNewEventFormData } from "../../@types/events";
+import { TEvent, TNewEventFormData } from "../../@types/events";
 import moment from "moment-timezone";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 import {
   apiErrorNotification,
+  customErrorNotification,
   customSuccessNotification,
 } from "../Notification";
 import { createNewEventApiService } from "../../services/eventApiService";
 import EventForm from "./EventForm";
+import { hasAlreadyEvent } from "../../utils/helper";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({
@@ -23,7 +25,11 @@ const schema = yup.object().shape({
   participants: yup.string().required("Participant name is required"),
 });
 
-export default function NewEventModal() {
+type NewEventModalProps = {
+  events: TEvent[];
+};
+
+export default function NewEventModal({ events }: NewEventModalProps) {
   const { selectedTimezone } = useGlobalContext();
 
   const [open, setOpen] = React.useState(false);
@@ -58,6 +64,14 @@ export default function NewEventModal() {
 
   const onSubmit = async (data: TNewEventFormData) => {
     try {
+      if (hasAlreadyEvent(data.startTime, events, selectedTimezone))
+        return customErrorNotification(
+          "You already have an event for this start time."
+        );
+      if (hasAlreadyEvent(data.endTime, events, selectedTimezone))
+        return customErrorNotification(
+          "You already have an event for this end time."
+        );
       const response = await createNewEventApiService(data);
       resetFormValues();
       handleClose();

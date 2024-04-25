@@ -5,7 +5,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import { getHolidaysApiService } from "../services/holidayApiService";
-import { TEvent, TPublicHolidayInputData } from "../@types/events";
+import {
+  TEvent,
+  TPublicHolidayInputData,
+  TPublicHolidayResponse,
+} from "../@types/events";
 import { convertPublicHolidaysToEvents } from "../utils/helper";
 import { apiErrorNotification } from "../components/Notification";
 import Events from "../components/home/Events";
@@ -19,6 +23,7 @@ function Home() {
   const theme = useTheme();
   const { selectedTimezone } = useGlobalContext();
   const [events, setEvents] = useState<TEvent[]>([]);
+  const [holidays, setHolidays] = useState<TEvent[]>([]);
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState<TEvent | null>();
@@ -29,7 +34,8 @@ function Home() {
       getCustomEvents(),
       getHolidays(),
     ]);
-    setEvents([...(holidaysEvents as TEvent[]), ...customEvents]);
+    setEvents(customEvents);
+    setHolidays(holidaysEvents as TEvent[]);
   };
 
   // get events
@@ -58,6 +64,23 @@ function Home() {
   useEffect(() => {
     getAllEvents();
   }, []);
+
+  const calendarEvents = React.useMemo(() => {
+    const evts = events.map((event) => ({
+      extendedProps: event,
+      title: event.title,
+      start: moment.tz(event.startTime, selectedTimezone).format(),
+      end: event.endTime
+        ? moment.tz(event.endTime, selectedTimezone).format()
+        : "",
+    }));
+    const hldys = holidays.map((event) => ({
+      extendedProps: event,
+      title: event.title,
+      start: moment.tz(event.startTime, selectedTimezone).format(),
+    }));
+    return [...evts, ...hldys];
+  }, [events, holidays]);
 
   return (
     <Box sx={{ p: 6 }}>
@@ -91,14 +114,7 @@ function Home() {
             }}
             droppable={true}
             timeZone={selectedTimezone}
-            events={events.map((event) => ({
-              extendedProps: event,
-              title: event.title,
-              start: moment.tz(event.startTime, selectedTimezone).format(),
-              end: event.endTime
-                ? moment.tz(event.endTime, selectedTimezone).format()
-                : "",
-            }))}
+            events={calendarEvents}
             eventTimeFormat={{
               hour: "numeric",
               minute: "2-digit",

@@ -51,6 +51,7 @@ function Events({ events }: EventsProps) {
   const handleModalClose = () => {
     setIsDeleteModalOpen(false);
     setIsEditModalOpen(false);
+    setIsViewModalOpen(false);
     setActiveEvent(null);
   };
 
@@ -78,9 +79,10 @@ function Events({ events }: EventsProps) {
         direction={"row"}
       >
         <Typography variant="h6">Today, {getMonthAndDay(TODAY)}</Typography>
-        <NewEventModal />
+        <NewEventModal events={events} />
         {activeEvent && isEditModalOpen ? (
           <UpdateEventModal
+            events={events}
             event={activeEvent}
             isOpen={isEditModalOpen}
             handleClose={handleModalClose}

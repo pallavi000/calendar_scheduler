@@ -9,6 +9,7 @@ import moment from "moment-timezone";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 import {
   apiErrorNotification,
+  customErrorNotification,
   customSuccessNotification,
 } from "../Notification";
 import {
@@ -16,6 +17,7 @@ import {
   updateEventApiService,
 } from "../../services/eventApiService";
 import EventForm from "./EventForm";
+import { hasAlreadyEvent } from "../../utils/helper";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({
@@ -27,16 +29,20 @@ const schema = yup.object().shape({
 });
 
 export type UpdateEventModalProps = {
+  events: TEvent[];
   event: TEvent;
   isOpen: boolean;
   handleClose: () => void;
 };
 
 export default function UpdateEventModal({
+  events,
   event,
   isOpen,
   handleClose,
 }: UpdateEventModalProps) {
+  const { selectedTimezone } = useGlobalContext();
+
   const methods = useForm<TNewEventFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -50,6 +56,14 @@ export default function UpdateEventModal({
 
   const onSubmit = async (data: TNewEventFormData) => {
     try {
+      if (hasAlreadyEvent(data.startTime, events, selectedTimezone))
+        return customErrorNotification(
+          "You already have an event for this start time."
+        );
+      if (hasAlreadyEvent(data.endTime, events, selectedTimezone))
+        return customErrorNotification(
+          "You already have an event for this end time."
+        );
       const response = await updateEventApiService(event.id, data);
       handleClose();
       customSuccessNotification("Event updated successfully.");

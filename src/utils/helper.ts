@@ -47,3 +47,20 @@ export function convertCountryResponseToOption(country: TCountryResponse) {
     value: country.countryCode,
   };
 }
+
+export const hasAlreadyEvent = (
+  date: string,
+  events: TEvent[],
+  selectedTimezone: TTimezone
+) => {
+  let isInBetween = false;
+  for (const event of events) {
+    const startDate = moment.tz(event.startTime, selectedTimezone);
+    const endDate = moment.tz(event.endTime, selectedTimezone);
+    if (moment.tz(date, selectedTimezone).isBetween(startDate, endDate)) {
+      isInBetween = true;
+      break; // Exit loop if the new date is found to be in between any range
+    }
+  }
+  return isInBetween;
+};
