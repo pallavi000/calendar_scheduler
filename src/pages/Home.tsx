@@ -10,9 +10,32 @@ import { convertPublicHolidaysToEvents } from "../utils/helper";
 import { apiErrorNotification } from "../components/Notification";
 import Events from "../components/home/Events";
 import { Box, Grid } from "@mui/material";
+import { getAllEventsApiService } from "../services/eventApiService";
+import moment from "moment-timezone";
+import { useGlobalContext } from "../global/GlobalContextProvider";
 
 function Home() {
+  const { selectedTimezone } = useGlobalContext();
   const [events, setEvents] = useState<TEvent[]>([]);
+
+  // get all events
+  const getAllEvents = async () => {
+    const [customEvents, holidaysEvents] = await Promise.all([
+      getCustomEvents(),
+      getHolidays(),
+    ]);
+    setEvents([...(holidaysEvents as TEvent[]), ...customEvents]);
+  };
+
+  // get events
+  const getCustomEvents = async () => {
+    try {
+      const response = await getAllEventsApiService();
+      return response.data;
+    } catch (error) {
+      apiErrorNotification(error);
+    }
+  };
 
   // get holidays
   const getHolidays = async () => {
@@ -22,13 +45,13 @@ function Home() {
       };
       const response = await getHolidaysApiService(data);
       const evts = convertPublicHolidaysToEvents(response.data);
-      setEvents(evts);
+      return evts;
     } catch (error) {
       apiErrorNotification(error);
     }
   };
   useEffect(() => {
-    getHolidays();
+    getAllEvents();
   }, []);
 
   return (
@@ -49,7 +72,14 @@ function Home() {
               listPlugin,
             ]}
             droppable={true}
-            events={events}
+            timeZone={selectedTimezone}
+            events={events.map((event) => ({
+              title: event.title,
+              start: moment.tz(event.startTime, selectedTimezone).format(),
+              end: event.endTime
+                ? moment.tz(event.endTime, selectedTimezone).format()
+                : "",
+            }))}
           />
         </Grid>
         <Grid item sm={12} md={3}>

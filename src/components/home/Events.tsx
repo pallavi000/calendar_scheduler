@@ -12,6 +12,7 @@ import { Add } from "@mui/icons-material";
 import { getFormatDate, getMonthAndDay } from "../../utils/helper";
 import { TEvent } from "../../@types/events";
 import TodayEventListItem from "./TodayEventListItem";
+import NewEventModal from "./NewEventModal";
 
 type EventsProps = {
   events: TEvent[];
@@ -20,7 +21,7 @@ type EventsProps = {
 function Events({ events }: EventsProps) {
   const TODAY = new Date();
   const todayEvents = events.filter((evt) =>
-    evt.start.includes(getFormatDate(TODAY))
+    evt.startTime.includes(getFormatDate(TODAY))
   );
 
   return (
@@ -32,9 +33,7 @@ function Events({ events }: EventsProps) {
         direction={"row"}
       >
         <Typography variant="h6">Today, {getMonthAndDay(TODAY)}</Typography>
-        <Button variant="contained" size="small" endIcon={<Add />}>
-          New Event
-        </Button>
+        <NewEventModal />
       </Stack>
       <Divider sx={{ my: 3 }} />
       <Stack>

@@ -21,6 +21,7 @@ import { getCurrentUserApiService } from "../services/authApiService";
 import { apiErrorNotification } from "../components/Notification";
 import { getAvailableCountriesApiService } from "../services/holidayApiService";
 import { getTimezonesFromCountry } from "../utils/helper";
+import moment from "moment-timezone";
 
 export const GlobalContext = createContext<TGlobalContextStates>({
   token: "",

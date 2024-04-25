@@ -17,6 +17,16 @@ export type TPublicHolidayResponse = {
 
 export type TEvent = {
   title: string;
-  start: string;
-  end?: string;
+  startTime: string;
+  endTime?: string;
+  description?: string;
+  participants?: string;
+};
+
+export type TNewEventFormData = {
+  title: string;
+  startTime: string;
+  endTime: string;
+  description: string;
+  participants: string;
 };

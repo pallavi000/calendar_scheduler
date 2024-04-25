@@ -1,18 +1,10 @@
-import moment from "moment";
+import moment from "moment-timezone";
 import { TEvent, TPublicHolidayResponse } from "../@types/events";
 import timezoneData from "../data/timezone.json";
 import { TCountryCode, TCountryResponse, TTimezone } from "../@types/common";
 
 export function getFormatDate(date: Date): string {
-  return moment(date).format("YYYY-MM-DD");
-}
-
-export function getStartOfYear(): string {
-  return moment().startOf("year").format("YYYY-MM-DD");
-}
-
-export function getEndOfYear(): string {
-  return moment().endOf("year").format("YYYY-MM-DD");
+  return moment.utc(date.toUTCString()).format("YYYY-MM-DD");
 }
 
 export function getCurrentYear(): string {
@@ -23,8 +15,12 @@ export function getMonthAndDay(date: Date): string {
   return moment(date).format("MMM D");
 }
 
-export function getTime(date: Date): string {
-  return moment(date).format("hh:mm A");
+export function getTime(date: Date, timezone: TTimezone): string {
+  return moment.tz(date, timezone).format("hh:mm A");
+}
+
+export function getTimeWithDate(date: Date): string {
+  return moment(date).format("MMM D, hh:mm A");
 }
 
 export function convertPublicHolidaysToEvents(
@@ -32,7 +28,7 @@ export function convertPublicHolidaysToEvents(
 ): TEvent[] {
   return holidays.map((holiday) => ({
     title: holiday.name,
-    start: holiday.date,
+    startTime: holiday.date,
   }));
 }
 
