@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, g, request
 
 from constants import COMMON
 from services.userService import get_user_by_email, generate_hash_password, create_user
 
 from middlewares import auth_middleware
+from schema import LoginSchema, RegisterSchema
+from marshmallow import ValidationError
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -15,13 +17,13 @@ auth_bp = Blueprint("auth", __name__)
 def login():
     """API for handle login"""
     try:
-        body = request.get_json()
-        if body is None:
-            return "Error: Request must have application/json Content-Type"
-        if "email" not in body:
-            return {"message": "email must be provided!"}, 400
-        if "password" not in body:
-            return {"message": "password must be provided!"}, 400
+        body = request.json
+        # input validation
+        schema = LoginSchema()
+        try:
+            schema.load(body)
+        except ValidationError as err:
+            return {"message": err.messages}, 400
 
         exist = get_user_by_email(email=body["email"])
         if not exist:
@@ -49,19 +51,20 @@ def signup():
     """API for handle signup"""
 
     try:
-        body = request.get_json()
-
-        if "email" not in body:
-            return {"message": "email must be provided!"}, 400
-        if "password" not in body:
-            return {"message": "password must be provided!"}, 400
+        body = request.json
+        # input validation
+        schema = RegisterSchema()
+        try:
+            schema.load(body)
+        except ValidationError as err:
+            return {"message": err.messages}, 400
 
         exist = get_user_by_email(email=body['email'])
         if exist:
             return {"message": "email already exists!"}, 400
         body["password"] = generate_hash_password(body['password'])
         user = create_user(body)
-        return {"code": 200, "message": "Signup success", "data": user}, 201
+        return {"code": 201, "message": "Signup success", "data": user}, 201
     except Exception as e:
         print(str(e))
         return {"code": 500, "message": "Internal Server Error"}, 500
@@ -69,10 +72,10 @@ def signup():
 
 @auth_bp.route(COMMON.ROUTES.ME, methods=["GET"])
 @auth_middleware
-def get_info(current_user):
+def get_info():
     """API for handle login"""
     try:
-        return {"code": 200, "data": current_user}
+        return {"code": 200, "data": g.current_user}
     except Exception as e:
         print(str(e))
         return {"code": 500, "message": "Internal Server Error"}, 500

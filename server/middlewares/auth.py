@@ -1,6 +1,6 @@
 from functools import wraps
 import jwt
-from flask import request
+from flask import request, g
 from constants import COMMON
 from services.userService import get_user_by_email
 
@@ -37,6 +37,7 @@ def auth_middleware(f):
                 "error": str(e),
                 "code": 500,
             }, 500
-        return f(current_user.serialize(), *args, *kawargs)
+        g.current_user = current_user.serialize()
+        return f(*args, *kawargs)
 
     return decorated

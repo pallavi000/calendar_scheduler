@@ -19,8 +19,9 @@ class User(db.Model, Serializer):
         db.session.commit()
 
 
-class Event(db.Model):
+class Event(db.Model, Serializer):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(120), nullable=False)
     startTime = db.Column(db.String(120), nullable=False)
     endTime = db.Column(db.String(120), nullable=False)
@@ -29,6 +30,9 @@ class Event(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update(self):
         db.session.commit()
 
     def delete_from_db(self):
