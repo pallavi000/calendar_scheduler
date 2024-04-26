@@ -15,7 +15,14 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { Autocomplete, Avatar, Button, Stack, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Avatar,
+  Button,
+  Stack,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import ThemeModeSwitch from "../components/ThemeModeSwitch";
 import { useGlobalContext } from "../global/GlobalContextProvider";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
@@ -52,6 +59,7 @@ export default function Navbar() {
       availableCountries.find(
         (country) => country.countryCode === selectedCountry
       ) || availableCountries[0];
+    if (!country) return undefined;
     return convertCountryResponseToOption(country);
   }, [availableCountries, selectedCountry]);
 
@@ -76,25 +84,25 @@ export default function Navbar() {
   // Desktop Menu | Right hand side
   const menuId = "primary-search-account-menu";
   const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logoutUser}>Logout</MenuItem>
-    </Menu>
+    <Tooltip title={user?.name || "User"}>
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        id={menuId}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={logoutUser}>Logout</MenuItem>
+      </Menu>
+    </Tooltip>
   );
 
   // Mobile Menu | Right hand side
@@ -115,14 +123,6 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
       <MenuItem>
         <IconButton
           size="large"

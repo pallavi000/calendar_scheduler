@@ -2,18 +2,20 @@ import {
   Alert,
   AlertTitle,
   Button,
+  ButtonGroup,
   Divider,
+  IconButton,
   List,
   Stack,
   Typography,
 } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Add, ChevronLeft, ChevronRight } from "@mui/icons-material";
 
 import { getFormatDate, getMonthAndDay } from "../../utils/helper";
-import { TEvent } from "../../@types/events";
+import { TEvent, TPublicHolidayResponse } from "../../@types/events";
 import TodayEventListItem from "./TodayEventListItem";
 import NewEventModal from "./NewEventModal";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateEventModal from "./UpdateEventModal";
 import ConfirmModal from "../ConfirmModal";
 import { deleteEventApiService } from "../../services/eventApiService";
@@ -22,21 +24,33 @@ import {
   customSuccessNotification,
 } from "../Notification";
 import ViewEventModal from "./ViewEventModal";
+import { useQueryClient } from "react-query";
+import moment from "moment-timezone";
 
 type EventsProps = {
   events: TEvent[];
+  holidays: TEvent[];
 };
 
-function Events({ events }: EventsProps) {
+const TODAY = moment.tz().format();
+
+function Events({ events, holidays }: EventsProps) {
+  const queryClient = useQueryClient();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState<TEvent | null>();
+  const [currentDate, setCurrentDate] = useState(TODAY);
 
-  const TODAY = new Date();
-  const todayEvents = events.filter((evt) =>
-    evt.startTime.includes(getFormatDate(TODAY))
-  );
+  const todayEvents = React.useMemo(() => {
+    const evts = events.filter((evt) =>
+      evt.startTime.includes(getFormatDate(currentDate))
+    );
+    const hldys = holidays.filter((evt) =>
+      evt.startTime.includes(getFormatDate(currentDate))
+    );
+    return [...evts, ...hldys];
+  }, [currentDate, events, holidays]);
 
   const handleEventViewClick = (event: TEvent) => {
     setActiveEvent(event);
@@ -60,6 +74,7 @@ function Events({ events }: EventsProps) {
     try {
       await deleteEventApiService(activeEvent.id);
       customSuccessNotification("event deleted successfully!");
+      queryClient.invalidateQueries(["events"]);
     } catch (error) {
       apiErrorNotification(error);
     }
@@ -70,6 +85,10 @@ function Events({ events }: EventsProps) {
     setIsDeleteModalOpen(true);
   };
 
+  useEffect(() => {
+    console.log(currentDate);
+  }, [currentDate]);
+
   return (
     <>
       <Stack
@@ -78,7 +97,28 @@ function Events({ events }: EventsProps) {
         justifyContent={"space-between"}
         direction={"row"}
       >
-        <Typography variant="h6">Today, {getMonthAndDay(TODAY)}</Typography>
+        <Stack direction={"row"} alignItems={"center"} spacing={2}>
+          <IconButton
+            onClick={() =>
+              setCurrentDate((prev) =>
+                moment.utc(prev).subtract(1, "day").format()
+              )
+            }
+          >
+            <ChevronLeft />
+          </IconButton>
+          <Typography variant="body1">
+            {moment.utc(currentDate).format("MMM DD")}
+          </Typography>
+          <IconButton
+            onClick={() =>
+              setCurrentDate((prev) => moment.utc(prev).add(1, "day").format())
+            }
+          >
+            <ChevronRight />
+          </IconButton>
+        </Stack>
+
         <NewEventModal events={events} />
         {activeEvent && isEditModalOpen ? (
           <UpdateEventModal

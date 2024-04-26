@@ -13,3 +13,10 @@ export type TTimezone = Exclude<
   (typeof timezoneData)[keyof typeof timezoneData][number],
   null
 >;
+
+export type TCalendarNavText = "prev" | "next";
+export type TCalendarView =
+  | "dayGridMonth"
+  | "timeGridWeek"
+  | "timeGridDay"
+  | "list";

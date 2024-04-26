@@ -1,69 +1,63 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import { getHolidaysApiService } from "../services/holidayApiService";
-import {
-  TEvent,
-  TPublicHolidayInputData,
-  TPublicHolidayResponse,
-} from "../@types/events";
+import { TEvent } from "../@types/events";
 import { convertPublicHolidaysToEvents } from "../utils/helper";
-import { apiErrorNotification } from "../components/Notification";
 import Events from "../components/home/Events";
 import { Box, Grid, useTheme } from "@mui/material";
 import { getAllEventsApiService } from "../services/eventApiService";
 import moment from "moment-timezone";
 import { useGlobalContext } from "../global/GlobalContextProvider";
 import ViewEventModal from "../components/home/ViewEventModal";
+import { useQuery } from "react-query";
+import { TCalendarNavText, TCalendarView } from "../@types/common";
+import CalendarTopBar from "../components/home/CalendarTopBar";
 
 function Home() {
   const theme = useTheme();
-  const { selectedTimezone } = useGlobalContext();
+  const calendarRef = useRef<any>();
+  const { selectedTimezone, selectedCountry } = useGlobalContext();
   const [events, setEvents] = useState<TEvent[]>([]);
   const [holidays, setHolidays] = useState<TEvent[]>([]);
+  const [activeDate, setActiveDate] = useState<string>(moment.tz().format());
+  const [activeView, setActiveView] = useState<TCalendarView>("dayGridMonth");
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState<TEvent | null>();
 
-  // get all events
-  const getAllEvents = async () => {
-    const [customEvents, holidaysEvents] = await Promise.all([
-      getCustomEvents(),
-      getHolidays(),
-    ]);
-    setEvents(customEvents);
-    setHolidays(holidaysEvents as TEvent[]);
-  };
+  useQuery(["events"], getAllEventsApiService, {
+    onSuccess: ({ data }) => {
+      setEvents(data.events);
+    },
+  });
 
-  // get events
-  const getCustomEvents = async () => {
-    try {
-      const response = await getAllEventsApiService();
-      return response.data;
-    } catch (error) {
-      apiErrorNotification(error);
-    }
-  };
+  useQuery({
+    queryKey: ["public_holidays", selectedCountry],
+    queryFn: () => getHolidaysApiService({ countryIsoCode: selectedCountry }),
+    onSuccess: ({ data }) => {
+      const evts = convertPublicHolidaysToEvents(data);
+      setHolidays(evts as TEvent[]);
+    },
+  });
 
-  // get holidays
-  const getHolidays = async () => {
-    try {
-      const data: TPublicHolidayInputData = {
-        countryIsoCode: "US",
-      };
-      const response = await getHolidaysApiService(data);
-      const evts = convertPublicHolidaysToEvents(response.data);
-      return evts;
-    } catch (error) {
-      apiErrorNotification(error);
+  const handlePrevNextClick = (action: TCalendarNavText) => {
+    if (!calendarRef.current) return;
+    if (action === "prev") {
+      calendarRef.current?.calendar?.prev();
+    } else {
+      calendarRef.current?.calendar?.next();
     }
+    setActiveDate(calendarRef.current?.calendar?.getDate().toISOString());
   };
-  useEffect(() => {
-    getAllEvents();
-  }, []);
+  const handleChangeViewClick = (view: TCalendarView) => {
+    if (!calendarRef.current) return;
+    calendarRef.current?.calendar?.changeView(view);
+    setActiveView(view);
+  };
 
   const calendarEvents = React.useMemo(() => {
     const evts = events.map((event) => ({
@@ -80,7 +74,7 @@ function Home() {
       start: moment.tz(event.startTime, selectedTimezone).format(),
     }));
     return [...evts, ...hldys];
-  }, [events, holidays]);
+  }, [events, holidays, selectedTimezone]);
 
   return (
     <Box sx={{ p: 6 }}>
@@ -96,11 +90,18 @@ function Home() {
       ) : null}
       <Grid container spacing={12}>
         <Grid item sm={12} md={9}>
+          <CalendarTopBar
+            handleChangeViewClick={handleChangeViewClick}
+            handlePrevNextClick={handlePrevNextClick}
+            activeDate={activeDate}
+            activeView={activeView}
+          />
           <FullCalendar
+            ref={calendarRef}
             headerToolbar={{
-              left: "prev,next",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,list",
+              left: "",
+              center: "",
+              right: "",
             }}
             plugins={[
               interactionPlugin,
@@ -126,7 +127,7 @@ function Home() {
           />
         </Grid>
         <Grid item sm={12} md={3}>
-          <Events events={events} />
+          <Events events={events} holidays={holidays} />
         </Grid>
       </Grid>
     </Box>

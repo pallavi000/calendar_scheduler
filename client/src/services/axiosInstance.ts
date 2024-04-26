@@ -4,16 +4,15 @@ import { LOCAL_STORAGE_TOKEN } from "../constants/common";
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API_URL,
 });
-
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(LOCAL_STORAGE_TOKEN);
+    config.headers["Access-Control-Allow-Credentials"] = "true";
+    config.headers["accept"] = "application/json";
+    config.headers["Content-Type"] = "application/json";
     if (token) {
       config.headers["Authorization"] = "Bearer " + JSON.parse(token);
-      // config.headers["Access-Control-Allow-Origin"] = "*";
-      // config.headers["Access-Control-Allow-Credentials"] = "true";
-      config.headers["accept"] = "application/json";
     }
     return config;
   },

@@ -3,8 +3,8 @@ import { TEvent, TPublicHolidayResponse } from "../@types/events";
 import timezoneData from "../data/timezone.json";
 import { TCountryCode, TCountryResponse, TTimezone } from "../@types/common";
 
-export function getFormatDate(date: Date): string {
-  return moment.utc(date.toUTCString()).format("YYYY-MM-DD");
+export function getFormatDate(date: string): string {
+  return moment.utc(date).format("YYYY-MM-DD");
 }
 
 export function getCurrentYear(): string {
@@ -28,6 +28,7 @@ export function convertPublicHolidaysToEvents(
 ): TEvent[] {
   return holidays.map((holiday) => ({
     id: 1,
+    type: "holiday",
     title: holiday.name,
     startTime: holiday.date,
   }));

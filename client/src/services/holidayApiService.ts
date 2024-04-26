@@ -6,7 +6,6 @@ export function getHolidaysApiService(data: TPublicHolidayInputData) {
   if (!data.year) {
     data.year = getCurrentYear();
   }
-
   return axios.get(
     `https://date.nager.at/api/v3/PublicHolidays/${data.year}/${data.countryIsoCode}`
   );

@@ -18,10 +18,9 @@ import {
 } from "../@types/common";
 import { TUser } from "../@types/user";
 import { getCurrentUserApiService } from "../services/authApiService";
-import { apiErrorNotification } from "../components/Notification";
 import { getAvailableCountriesApiService } from "../services/holidayApiService";
 import { getTimezonesFromCountry } from "../utils/helper";
-import moment from "moment-timezone";
+import { useQuery } from "react-query";
 
 export const GlobalContext = createContext<TGlobalContextStates>({
   token: "",
@@ -45,6 +44,11 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
   const [user, setUser] = useState<TUser>();
   const [token, setToken] = useLocalStorage(LOCAL_STORAGE_TOKEN, "");
 
+  const [themeMode, setThemeMode] = useLocalStorage<TThemeMode | "">(
+    THEME_MODE,
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  );
+
   const [availableCountries, setAvailableCountries] = useState<
     TCountryResponse[]
   >([]);
@@ -59,6 +63,22 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     DEFAULT_TIMEZONE
   );
 
+  useQuery(["me"], getCurrentUserApiService, {
+    enabled: Boolean(token),
+    retry: false,
+    onSuccess: ({ data }) => {
+      setUser(data.user);
+      setIsAppReady(true);
+    },
+  });
+
+  useQuery(["get_countries"], getAvailableCountriesApiService, {
+    retry: false,
+    onSuccess: ({ data }) => {
+      setAvailableCountries(data);
+    },
+  });
+
   useEffect(() => {
     if (selectedCountry) {
       const newTimezones = getTimezonesFromCountry(selectedCountry);
@@ -69,24 +89,6 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     }
   }, [selectedCountry]);
 
-  const getAvailableCountries = async () => {
-    try {
-      const response = await getAvailableCountriesApiService();
-      setAvailableCountries(response.data);
-    } catch (error) {
-      apiErrorNotification(error);
-    }
-  };
-
-  useEffect(() => {
-    getAvailableCountries();
-  }, []);
-
-  const [themeMode, setThemeMode] = useLocalStorage<TThemeMode | "">(
-    THEME_MODE,
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-  );
-
   const toggleThemeMode = () => {
     setThemeMode((prev: TThemeMode) => (prev === "dark" ? "light" : "dark"));
   };
@@ -96,20 +98,8 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     window.location.href = "/sign-in";
   };
 
-  const getCurrentUser = async () => {
-    try {
-      const respose = await getCurrentUserApiService();
-      setUser(respose.data);
-    } catch (error) {
-      setToken("");
-    }
-    setIsAppReady(true);
-  };
-
   useEffect(() => {
-    if (token) {
-      getCurrentUser();
-    } else {
+    if (!token) {
       setIsAppReady(true);
     }
   }, [token]);

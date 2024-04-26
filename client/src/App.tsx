@@ -7,27 +7,32 @@ import ThemeProvider from "./theme/ThemeProvider";
 import SignIn from "./pages/auth/SignIn";
 import Register from "./pages/auth/Register";
 import UserProtected from "./global/UserProtected";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
     <Router>
-      <GlobalContextProvider>
-        <ThemeProvider>
-          <Routes>
-            {/* app layout */}
-            <Route element={<AppLayout />}>
-              {/* public routes */}
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/register" element={<Register />} />
+      <QueryClientProvider client={queryClient}>
+        <GlobalContextProvider>
+          <ThemeProvider>
+            <Routes>
+              {/* app layout */}
+              <Route element={<AppLayout />}>
+                {/* public routes */}
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/register" element={<Register />} />
 
-              {/* user protected routes */}
-              <Route element={<UserProtected />}>
-                <Route path="/" element={<Home />} />
+                {/* user protected routes */}
+                <Route element={<UserProtected />}>
+                  <Route path="/" element={<Home />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </ThemeProvider>
-      </GlobalContextProvider>
+            </Routes>
+          </ThemeProvider>
+        </GlobalContextProvider>
+      </QueryClientProvider>
     </Router>
   );
 }

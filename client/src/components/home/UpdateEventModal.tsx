@@ -18,6 +18,7 @@ import {
 } from "../../services/eventApiService";
 import EventForm from "./EventForm";
 import { hasAlreadyEvent } from "../../utils/helper";
+import { useQueryClient } from "react-query";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({
@@ -41,6 +42,7 @@ export default function UpdateEventModal({
   isOpen,
   handleClose,
 }: UpdateEventModalProps) {
+  const queryClient = useQueryClient();
   const { selectedTimezone } = useGlobalContext();
 
   const methods = useForm<TNewEventFormData>({
@@ -64,9 +66,10 @@ export default function UpdateEventModal({
         return customErrorNotification(
           "You already have an event for this end time."
         );
-      const response = await updateEventApiService(event.id, data);
+      await updateEventApiService(event.id, data);
       handleClose();
       customSuccessNotification("Event updated successfully.");
+      queryClient.invalidateQueries(["events"]);
     } catch (error) {
       apiErrorNotification(error);
     }

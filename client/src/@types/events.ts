@@ -19,6 +19,7 @@ export type TEvent = {
   id: number;
   title: string;
   startTime: string;
+  type: "event" | "holiday";
   endTime?: string;
   description?: string;
   participants?: string;

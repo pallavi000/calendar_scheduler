@@ -49,9 +49,11 @@ function TodayEventListItem({
     <>
       <ListItem
         secondaryAction={
-          <IconButton onClick={handleClick}>
-            <MoreVertIcon />
-          </IconButton>
+          event.type !== "holiday" ? (
+            <IconButton onClick={handleClick}>
+              <MoreVertIcon />
+            </IconButton>
+          ) : null
         }
       >
         <ListItemButton>
@@ -81,7 +83,10 @@ function TodayEventListItem({
               }}
             />
           ) : (
-            <ListItemText primary={event.title} />
+            <ListItemText
+              primary={event.title}
+              secondary={event.type ? event.type : ""}
+            />
           )}
         </ListItemButton>
       </ListItem>

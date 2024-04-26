@@ -31,10 +31,10 @@ def update_event(id, data, user_id):
     event.endTime = data['endTime']
     event.participants = data['participants']
     event.update()
-    return event
+    return event.serialize()
 
 
 def delete_event(id, user_id):
     event = get_event_by_id_and_user_id(id, user_id)
     event.delete_from_db()
-    return event
+    return {}

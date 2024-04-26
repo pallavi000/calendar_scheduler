@@ -6,9 +6,9 @@ export function loginApiService(data: TLoginInputs) {
 }
 
 export function registerApiService(data: TRegisterInputs) {
-  return axiosInstance.post("/auth/register", data);
+  return axiosInstance.post("/auth/signup", data);
 }
 
 export function getCurrentUserApiService() {
-  return axiosInstance.get("/auth/profile");
+  return axiosInstance.get("/auth/me");
 }

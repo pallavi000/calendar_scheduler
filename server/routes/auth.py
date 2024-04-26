@@ -39,7 +39,7 @@ def login():
         # Gen token
         body["exp"] = datetime.now(tz=timezone.utc) + timedelta(seconds=int(COMMON.JWT.EXPIRES_IN))
         token = jwt.encode(current_user, COMMON.JWT.SECRET)
-        return {"code": 200, "token": token, "data": current_user}
+        return {"code": 200, "token": token, "user": current_user}
 
     except Exception as e:
         print(str(e))
@@ -64,7 +64,7 @@ def signup():
             return {"message": "email already exists!"}, 400
         body["password"] = generate_hash_password(body['password'])
         user = create_user(body)
-        return {"code": 201, "message": "Signup success", "data": user}, 201
+        return {"code": 201, "message": "Signup success", "user": user}, 201
     except Exception as e:
         print(str(e))
         return {"code": 500, "message": "Internal Server Error"}, 500
@@ -75,7 +75,7 @@ def signup():
 def get_info():
     """API for handle login"""
     try:
-        return {"code": 200, "data": g.current_user}
+        return {"code": 200, "user": g.current_user}
     except Exception as e:
         print(str(e))
         return {"code": 500, "message": "Internal Server Error"}, 500

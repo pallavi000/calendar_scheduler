@@ -15,6 +15,7 @@ def generate_hash_password(password):
 
 def create_user(data):
     new_user = User(
+        name=data['name'],
         email=data['email'],
         password=data['password'],
     )

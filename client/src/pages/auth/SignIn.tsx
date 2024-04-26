@@ -30,7 +30,6 @@ const validationSchema = yup.object().shape({
 
 function SignIn() {
   const { setToken } = useGlobalContext();
-  const navigate = useNavigate();
   const [isFormSubmitting, setIsFormSubmitting] = React.useState(false);
 
   const {
@@ -45,7 +44,7 @@ function SignIn() {
     setIsFormSubmitting(true);
     try {
       const res = await loginApiService(data);
-      setToken(res.data.access_token);
+      setToken(res.data.token);
       customSuccessNotification("Login Successful!");
       window.location.href = "/";
     } catch (error) {
@@ -145,7 +144,7 @@ function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/auth/register" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
