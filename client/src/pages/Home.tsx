@@ -1,21 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import moment from "moment-timezone";
+import { useQuery } from "react-query";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
-import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
-import { getHolidaysApiService } from "../services/holidayApiService";
-import { TEvent } from "../@types/events";
-import { convertPublicHolidaysToEvents } from "../utils/helper";
-import Events from "../components/home/Events";
+import interactionPlugin from "@fullcalendar/interaction";
+
+// MUI
 import { Box, Grid, useTheme } from "@mui/material";
+
+// services
+import { getHolidaysApiService } from "../services/holidayApiService";
 import { getAllEventsApiService } from "../services/eventApiService";
-import moment from "moment-timezone";
-import { useGlobalContext } from "../global/GlobalContextProvider";
-import ViewEventModal from "../components/home/ViewEventModal";
-import { useQuery } from "react-query";
+
+// types
+import { TEvent } from "../@types/events";
 import { TCalendarNavText, TCalendarView } from "../@types/common";
+
+// helpers
+import { convertPublicHolidaysToEvents } from "../utils/helper";
+
+// components
+import Events from "../components/home/Events";
+import ViewEventModal from "../components/home/ViewEventModal";
 import CalendarTopBar from "../components/home/CalendarTopBar";
+
+// context
+import { useGlobalContext } from "../global/GlobalContextProvider";
 
 function Home() {
   const theme = useTheme();
@@ -29,12 +41,14 @@ function Home() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [activeEvent, setActiveEvent] = useState<TEvent | null>();
 
+  // get users events
   useQuery(["events"], getAllEventsApiService, {
     onSuccess: ({ data }) => {
       setEvents(data.events);
     },
   });
 
+  // get public holidays
   useQuery({
     queryKey: ["public_holidays", selectedCountry],
     queryFn: () => getHolidaysApiService({ countryIsoCode: selectedCountry }),
@@ -44,6 +58,7 @@ function Home() {
     },
   });
 
+  // prev next click handler
   const handlePrevNextClick = (action: TCalendarNavText) => {
     if (!calendarRef.current) return;
     if (action === "prev") {
@@ -53,12 +68,15 @@ function Home() {
     }
     setActiveDate(calendarRef.current?.calendar?.getDate().toISOString());
   };
+
+  // change view handler
   const handleChangeViewClick = (view: TCalendarView) => {
     if (!calendarRef.current) return;
     calendarRef.current?.calendar?.changeView(view);
     setActiveView(view);
   };
 
+  // calendar events data transformation
   const calendarEvents = React.useMemo(() => {
     const evts = events.map((event) => ({
       extendedProps: event,

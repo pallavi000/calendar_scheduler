@@ -1,9 +1,15 @@
+import React from "react";
+
+// icons
 import {
   Delete,
   Edit,
   NotificationsActive,
   RemoveRedEye,
 } from "@mui/icons-material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+// mui
 import {
   IconButton,
   ListItem,
@@ -14,11 +20,15 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
-import { TEvent } from "../../@types/events";
+
+// helpers
 import { getTime } from "../../utils/helper";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+// context
 import { useGlobalContext } from "../../global/GlobalContextProvider";
+
+// types
+import { TEvent } from "../../@types/events";
 
 type TodayEventListItemProps = {
   event: TEvent;

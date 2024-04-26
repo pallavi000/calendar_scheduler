@@ -1,28 +1,36 @@
 import * as React from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+
+// MUI
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Container from "@mui/material/Container";
-
 import { Card, CardContent, CardHeader, Divider, Stack } from "@mui/material";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
 
+// icons
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
+// notifications
 import {
   apiErrorNotification,
   customSuccessNotification,
 } from "../../components/Notification";
+
+// types
 import { TLoginInputs } from "../../@types/auth";
-import { useNavigate } from "react-router-dom";
+
+// services
 import { loginApiService } from "../../services/authApiService";
 import { useGlobalContext } from "../../global/GlobalContextProvider";
 import LoadingButton from "../../components/LoadingButton";
 
+// validation schema
 const validationSchema = yup.object().shape({
   email: yup.string().email().required("Email Address is required"),
   password: yup.string().required("Password is required."),

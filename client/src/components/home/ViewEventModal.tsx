@@ -1,5 +1,5 @@
-import React from "react";
-import { useGlobalContext } from "../../global/GlobalContextProvider";
+import moment from "moment-timezone";
+// MUI
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,15 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-import { TEvent } from "../../@types/events";
+
+// icons
 import CloseIcon from "@mui/icons-material/Close";
-import moment from "moment-timezone";
+
+// context
+import { useGlobalContext } from "../../global/GlobalContextProvider";
+
+// types
+import { TEvent } from "../../@types/events";
 
 type ViewEventModalProps = {
   event: TEvent;

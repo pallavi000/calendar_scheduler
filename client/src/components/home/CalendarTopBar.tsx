@@ -1,6 +1,11 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
 import moment from "moment-timezone";
+// MUI
+import { Button, ButtonGroup, Stack, Typography } from "@mui/material";
+
+// Icons
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+
+// types
 import { TCalendarNavText, TCalendarView } from "../../@types/common";
 
 type CalendarTopBarProps = {

@@ -1,17 +1,15 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import EventNoteIcon from "@mui/icons-material/EventNote";
+
+// MUI
 import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Badge,
+  MenuItem,
+  Menu,
   Autocomplete,
   Avatar,
   Button,
@@ -19,18 +17,35 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import ThemeModeSwitch from "../components/ThemeModeSwitch";
-import { useGlobalContext } from "../global/GlobalContextProvider";
+
+// icons
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+
+// components
+import ThemeModeSwitch from "../components/ThemeModeSwitch";
+
+// context
+import { useGlobalContext } from "../global/GlobalContextProvider";
+
+// helpers
 import { convertCountryResponseToOption } from "../utils/helper";
+
+// types
 import { TCountryCode } from "../@types/common";
 
 export default function Navbar() {
+  // drawer and menus
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  // context values
   const {
     eventNotifications,
     user,
@@ -51,6 +66,7 @@ export default function Navbar() {
       ),
     [availableCountries]
   );
+  // selected country option
   const selectedCountryOption = React.useMemo(() => {
     const country =
       availableCountries.find(
@@ -181,7 +197,7 @@ export default function Navbar() {
               sx={{ width: 300 }}
               size="small"
               options={availableCountriesOptions}
-              onChange={(event, newInputValue) => {
+              onChange={(_, newInputValue) => {
                 if (!newInputValue) return;
                 setSelectedCountry(newInputValue?.value as TCountryCode);
               }}
@@ -201,7 +217,7 @@ export default function Navbar() {
               renderInput={(params) => (
                 <TextField {...params} label="Select Timezone" />
               )}
-              onInputChange={(event, newInputValue) => {
+              onInputChange={(_, newInputValue) => {
                 setSelectedTimezone(newInputValue);
               }}
             />

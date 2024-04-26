@@ -1,13 +1,20 @@
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+// Pages
 import Home from "./pages/Home";
-import "./App.css";
-import AppLayout from "./layouts/AppLayout";
-import GlobalContextProvider from "./global/GlobalContextProvider";
-import ThemeProvider from "./theme/ThemeProvider";
 import SignIn from "./pages/auth/SignIn";
 import Register from "./pages/auth/Register";
+
+// Providers
+import GlobalContextProvider from "./global/GlobalContextProvider";
+import ThemeProvider from "./theme/ThemeProvider";
+
 import UserProtected from "./global/UserProtected";
-import { QueryClient, QueryClientProvider } from "react-query";
+// layouts
+import AppLayout from "./layouts/AppLayout";
+// css
+import "./App.css";
 
 const queryClient = new QueryClient();
 

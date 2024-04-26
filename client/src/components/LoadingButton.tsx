@@ -1,9 +1,8 @@
-import React from "react";
-
 // MUI
 import { Button, CircularProgress } from "@mui/material";
 import { TColorTypes } from "../@types/theme";
 
+// types
 interface ILoadingButtonProps {
   isLoading?: boolean;
   color?: TColorTypes;

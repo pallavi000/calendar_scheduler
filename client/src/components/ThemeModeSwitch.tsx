@@ -1,11 +1,9 @@
-import React from "react";
-
 // MUI
 import { styled } from "@mui/material/styles";
 import { Switch, FormGroup, FormControlLabel } from "@mui/material";
-import { useGlobalContext } from "../global/GlobalContextProvider";
 
 // context
+import { useGlobalContext } from "../global/GlobalContextProvider";
 
 function ThemeModeSwitch() {
   const { themeMode, toggleThemeMode } = useGlobalContext();

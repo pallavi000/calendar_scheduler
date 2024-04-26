@@ -1,21 +1,30 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import { Add } from "@mui/icons-material";
 import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TEvent, TNewEventFormData } from "../../@types/events";
-import moment from "moment-timezone";
+import { useQueryClient } from "react-query";
+
+// context
 import { useGlobalContext } from "../../global/GlobalContextProvider";
+
+// notification
 import {
   apiErrorNotification,
   customErrorNotification,
   customSuccessNotification,
 } from "../Notification";
+
+// services
 import { updateEventApiService } from "../../services/eventApiService";
+
+// components
 import EventForm from "./EventForm";
+
+// helpers
 import { hasAlreadyEvent } from "../../utils/helper";
-import { useQueryClient } from "react-query";
+
+// types
+import { TEvent, TNewEventFormData } from "../../@types/events";
 
 // Define validation schema using Yup
 const schema = yup.object().shape({

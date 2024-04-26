@@ -1,31 +1,41 @@
+import React, { useState } from "react";
+import { useQueryClient } from "react-query";
+import moment from "moment-timezone";
+// MUI
 import {
   Alert,
   AlertTitle,
-  Button,
-  ButtonGroup,
   Divider,
   IconButton,
   List,
   Stack,
   Typography,
 } from "@mui/material";
-import { Add, ChevronLeft, ChevronRight } from "@mui/icons-material";
 
-import { getFormatDate, getMonthAndDay } from "../../utils/helper";
-import { TEvent, TPublicHolidayResponse } from "../../@types/events";
+// icons
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+
+// helpers
+import { getFormatDate } from "../../utils/helper";
+
+// components
 import TodayEventListItem from "./TodayEventListItem";
 import NewEventModal from "./NewEventModal";
-import React, { useEffect, useState } from "react";
 import UpdateEventModal from "./UpdateEventModal";
 import ConfirmModal from "../ConfirmModal";
+import ViewEventModal from "./ViewEventModal";
+
+// services
 import { deleteEventApiService } from "../../services/eventApiService";
+
+// notifications
 import {
   apiErrorNotification,
   customSuccessNotification,
 } from "../Notification";
-import ViewEventModal from "./ViewEventModal";
-import { useQueryClient } from "react-query";
-import moment from "moment-timezone";
+
+// types
+import { TEvent } from "../../@types/events";
 
 type EventsProps = {
   events: TEvent[];
@@ -42,6 +52,7 @@ function Events({ events, holidays }: EventsProps) {
   const [activeEvent, setActiveEvent] = useState<TEvent | null>();
   const [currentDate, setCurrentDate] = useState(TODAY);
 
+  // todays events | holidays
   const todayEvents = React.useMemo(() => {
     const evts = events.filter((evt) =>
       evt.startTime.includes(getFormatDate(currentDate))
@@ -84,10 +95,6 @@ function Events({ events, holidays }: EventsProps) {
     setActiveEvent(event);
     setIsDeleteModalOpen(true);
   };
-
-  useEffect(() => {
-    console.log(currentDate);
-  }, [currentDate]);
 
   return (
     <>

@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { io } from "socket.io-client";
+
+// hooks
 import useLocalStorage from "../hooks/useLocalStorage";
+
+// constants
 import {
   DEFAULT_COUNTRY_CODE,
   DEFAULT_TIMEZONE,
@@ -8,7 +14,11 @@ import {
   LOCAL_STORAGE_TOKEN,
   THEME_MODE,
 } from "../constants/common";
+
+// components
 import AppLoader from "../components/AppLoader";
+
+// types
 import { TGlobalContextStates } from "../@types/context";
 import {
   TCountryCode,
@@ -17,15 +27,20 @@ import {
   TTimezone,
 } from "../@types/common";
 import { TUser } from "../@types/user";
+import { TEvent } from "../@types/events";
+
+// services
 import { getCurrentUserApiService } from "../services/authApiService";
 import { getAvailableCountriesApiService } from "../services/holidayApiService";
-import { getTimezonesFromCountry } from "../utils/helper";
-import { useQuery } from "react-query";
-import { io } from "socket.io-client";
-import { TEvent } from "../@types/events";
-import { eventNotification } from "../components/Notification";
 import { clearEventNotificationApiService } from "../services/eventApiService";
 
+// helpers
+import { getTimezonesFromCountry } from "../utils/helper";
+
+// components
+import { eventNotification } from "../components/Notification";
+
+// context init
 export const GlobalContext = createContext<TGlobalContextStates>({
   token: "",
   setToken: () => {},
@@ -42,6 +57,7 @@ export const GlobalContext = createContext<TGlobalContextStates>({
   eventNotifications: [],
 });
 
+// use context
 export const useGlobalContext = () => useContext(GlobalContext);
 
 function GlobalContextProvider({ children }: React.PropsWithChildren) {
@@ -66,6 +82,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     DEFAULT_TIMEZONE
   );
 
+  // get current user
   useQuery(["me"], getCurrentUserApiService, {
     enabled: Boolean(token),
     retry: false,
@@ -75,6 +92,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     },
   });
 
+  // get available countries
   useQuery(["get_countries"], getAvailableCountriesApiService, {
     retry: false,
     onSuccess: ({ data }) => {
@@ -82,6 +100,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     },
   });
 
+  // clear notification schedule job
   const handleClearNotification = async (job_id: string) => {
     try {
       await clearEventNotificationApiService(job_id);
@@ -90,13 +109,11 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  // socket config
   useEffect(() => {
     let socket: any;
     if (user) {
       socket = io("http://127.0.0.1:5000", {});
-      socket.on("connect", (conn: any) => {
-        socket.emit("joined", user);
-      });
       socket.on(
         "event_notification",
         ({ event, job_id }: { event: TEvent; job_id: string }) => {
@@ -112,6 +129,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     };
   }, [user]);
 
+  // update timezone when country change
   useEffect(() => {
     if (selectedCountry) {
       const newTimezones = getTimezonesFromCountry(selectedCountry);
@@ -122,21 +140,25 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     }
   }, [selectedCountry]);
 
+  // toggle theme mode
   const toggleThemeMode = () => {
     setThemeMode((prev: TThemeMode) => (prev === "dark" ? "light" : "dark"));
   };
 
+  // logout user
   const logoutUser = () => {
     setToken("");
     window.location.href = "/sign-in";
   };
 
+  // get app ready instantly when user is logged out
   useEffect(() => {
     if (!token) {
       setIsAppReady(true);
     }
   }, [token]);
 
+  // loader
   if (!isAppReady) return <AppLoader />;
 
   return (

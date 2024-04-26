@@ -1,26 +1,38 @@
 import * as React from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
+
+// MUI
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Container from "@mui/material/Container";
-
 import { Card, CardContent, CardHeader, Divider, Stack } from "@mui/material";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
+
+// icons
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
+// components
+import LoadingButton from "../../components/LoadingButton";
+
+// services
 import { registerApiService } from "../../services/authApiService";
+
+// notifications
 import {
   apiErrorNotification,
   customSuccessNotification,
 } from "../../components/Notification";
-import { TRegisterInputs } from "../../@types/auth";
-import LoadingButton from "../../components/LoadingButton";
 
+// types
+import { TRegisterInputs } from "../../@types/auth";
+
+// validation schema
 const validationSchema = yup.object().shape({
   name: yup.string().required("Name is required."),
   email: yup.string().email().required("Email Address is required"),
@@ -34,7 +46,6 @@ function Register() {
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<TRegisterInputs>({
     resolver: yupResolver(validationSchema),

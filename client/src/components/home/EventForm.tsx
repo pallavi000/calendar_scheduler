@@ -1,3 +1,6 @@
+import moment from "moment-timezone";
+import { Controller, useFormContext } from "react-hook-form";
+// MUI
 import {
   Button,
   Dialog,
@@ -12,12 +15,15 @@ import {
 } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment-timezone";
-import React from "react";
-import { Controller, useFormContext } from "react-hook-form";
+
+// icons
 import CloseIcon from "@mui/icons-material/Close";
-import { TEvent, TNewEventFormData } from "../../@types/events";
+
+// context
 import { useGlobalContext } from "../../global/GlobalContextProvider";
+
+// types
+import { TNewEventFormData } from "../../@types/events";
 
 type EventFormProps = {
   title: string;

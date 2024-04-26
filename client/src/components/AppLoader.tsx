@@ -1,17 +1,20 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 // MUI
 import { Container, CircularProgress, CssBaseline } from "@mui/material";
 import {
   createTheme,
   ThemeProvider as MUIThemeProvider,
 } from "@mui/material/styles";
+
+// constants
 import { THEME_MODE } from "../constants/common";
 
-import useLocalStorage from "../hooks/useLocalStorage";
 import palette from "../theme/palette";
+// hooks
+import useLocalStorage from "../hooks/useLocalStorage";
 
 function AppLoader() {
-  const [themeMode, setThemeMode] = useLocalStorage(
+  const [themeMode, _] = useLocalStorage(
     THEME_MODE,
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
