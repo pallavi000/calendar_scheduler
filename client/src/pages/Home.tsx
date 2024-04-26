@@ -121,8 +121,8 @@ function Home() {
               meridiem: "short",
             }}
             eventDidMount={(info) => console.log(info)}
-            eventColor={theme.palette.primary.main}
-            eventTextColor={theme.palette.primary.contrastText}
+            eventColor={theme.palette.info.main}
+            eventTextColor={theme.palette.info.contrastText}
           />
         </Grid>
         <Grid item sm={12} md={3}>
