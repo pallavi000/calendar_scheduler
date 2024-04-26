@@ -48,3 +48,15 @@ export function apiErrorNotification(error: any) {
     },
   });
 }
+
+export function eventNotification(msg = "Success!") {
+  enqueueSnackbar(msg, {
+    variant: "info",
+    action,
+    autoHideDuration: null,
+    anchorOrigin: {
+      vertical: "bottom",
+      horizontal: "right",
+    },
+  });
+}

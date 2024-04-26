@@ -27,6 +27,7 @@ class Event(db.Model, Serializer):
     startTime = db.Column(db.String(120), nullable=False)
     endTime = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(120), nullable=False)
+    timezone = db.Column(db.String(120), nullable=False)
     participants = db.Column(db.String(255), nullable=False)
 
     def save_to_db(self):

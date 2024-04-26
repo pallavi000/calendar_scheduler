@@ -23,6 +23,7 @@ export type TEvent = {
   endTime?: string;
   description?: string;
   participants?: string;
+  timezone?: string;
 };
 
 export type TNewEventFormData = {
@@ -31,4 +32,5 @@ export type TNewEventFormData = {
   endTime: string;
   description: string;
   participants: string;
+  timezone: string;
 };

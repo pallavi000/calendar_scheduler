@@ -1,7 +1,7 @@
 from middlewares import auth_middleware
 from flask import Blueprint, request, g, jsonify
 from marshmallow import ValidationError
-from services.eventService import get_events_by_user_id, create_new_event, update_event, delete_event
+from services.eventService import get_events_by_user_id, create_new_event, update_event, delete_event, schedule_event_notification
 from constants import COMMON
 from schema import EventSchema
 from werkzeug.exceptions import NotFound
@@ -33,6 +33,7 @@ def create_event():
         except ValidationError as err:
             return {"message": err.messages}, 400
         event = create_new_event(body, g.current_user['id'])
+        schedule_event_notification(event)
         return {"code": 201, "message":"event created!", "event":event}
     except Exception as e:
         print(str(e))

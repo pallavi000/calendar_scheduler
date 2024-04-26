@@ -18,3 +18,4 @@ class EventSchema(Schema):
     endTime = fields.String(required=True)
     description = fields.String(required=True)
     participants = fields.String(required=True)
+    timezone = fields.String(required=True)

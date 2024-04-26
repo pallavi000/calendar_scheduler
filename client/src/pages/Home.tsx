@@ -121,7 +121,6 @@ function Home() {
               minute: "2-digit",
               meridiem: "short",
             }}
-            eventDidMount={(info) => console.log(info)}
             eventColor={theme.palette.info.main}
             eventTextColor={theme.palette.info.contrastText}
           />

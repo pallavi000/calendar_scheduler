@@ -12,10 +12,7 @@ import {
   customErrorNotification,
   customSuccessNotification,
 } from "../Notification";
-import {
-  createNewEventApiService,
-  updateEventApiService,
-} from "../../services/eventApiService";
+import { updateEventApiService } from "../../services/eventApiService";
 import EventForm from "./EventForm";
 import { hasAlreadyEvent } from "../../utils/helper";
 import { useQueryClient } from "react-query";
@@ -27,6 +24,7 @@ const schema = yup.object().shape({
   endTime: yup.string().required("End time is required"),
   description: yup.string().required("Description is required"),
   participants: yup.string().required("Participant name is required"),
+  timezone: yup.string().required(),
 });
 
 export type UpdateEventModalProps = {
@@ -53,6 +51,7 @@ export default function UpdateEventModal({
       endTime: event.endTime,
       description: event.description,
       participants: event.participants,
+      timezone: selectedTimezone,
     },
   });
 

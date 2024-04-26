@@ -24,6 +24,7 @@ const schema = yup.object().shape({
   endTime: yup.string().required("End time is required"),
   description: yup.string().required("Description is required"),
   participants: yup.string().required("Participant name is required"),
+  timezone: yup.string().required(),
 });
 
 type NewEventModalProps = {
@@ -53,6 +54,7 @@ export default function NewEventModal({ events }: NewEventModalProps) {
     if (selectedTimezone) {
       setValue("startTime", moment.tz(selectedTimezone).format());
       setValue("endTime", moment.tz(selectedTimezone).format());
+      setValue("timezone", selectedTimezone);
     }
   }, [selectedTimezone]);
 

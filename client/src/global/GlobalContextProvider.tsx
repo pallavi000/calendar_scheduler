@@ -21,6 +21,9 @@ import { getCurrentUserApiService } from "../services/authApiService";
 import { getAvailableCountriesApiService } from "../services/holidayApiService";
 import { getTimezonesFromCountry } from "../utils/helper";
 import { useQuery } from "react-query";
+import { io } from "socket.io-client";
+import { TEvent } from "../@types/events";
+import { eventNotification } from "../components/Notification";
 
 export const GlobalContext = createContext<TGlobalContextStates>({
   token: "",
@@ -41,14 +44,13 @@ export const useGlobalContext = () => useContext(GlobalContext);
 
 function GlobalContextProvider({ children }: React.PropsWithChildren) {
   const [isAppReady, setIsAppReady] = useState(false);
+  const [eventNotifications, setEventNotifications] = useState<TEvent[]>([]);
   const [user, setUser] = useState<TUser>();
   const [token, setToken] = useLocalStorage(LOCAL_STORAGE_TOKEN, "");
-
   const [themeMode, setThemeMode] = useLocalStorage<TThemeMode | "">(
     THEME_MODE,
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
-
   const [availableCountries, setAvailableCountries] = useState<
     TCountryResponse[]
   >([]);
@@ -56,7 +58,6 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     LOCAL_STORAGE_COUNTRY,
     DEFAULT_COUNTRY_CODE
   );
-
   const [availableTimezones, setAvailableTimezones] = useState<TTimezone[]>([]);
   const [selectedTimezone, setSelectedTimezone] = useLocalStorage<TTimezone>(
     LOCAL_STORAGE_TIMEZONE,
@@ -78,6 +79,23 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
       setAvailableCountries(data);
     },
   });
+
+  useEffect(() => {
+    let socket: any;
+    if (user) {
+      socket = io("http://127.0.0.1:5000", {});
+      socket.on("connect", (conn: any) => {
+        socket.emit("joined", user);
+      });
+      socket.on("event_notification", (event: TEvent) => {
+        setEventNotifications((prev) => [...prev, event]);
+        eventNotification(`"${event.title}" named event has started!`);
+      });
+    }
+    return () => {
+      socket?.disconnect();
+    };
+  }, [user]);
 
   useEffect(() => {
     if (selectedCountry) {
