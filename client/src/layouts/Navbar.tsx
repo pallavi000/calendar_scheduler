@@ -1,17 +1,13 @@
 import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import EventNoteIcon from "@mui/icons-material/EventNote";
@@ -36,6 +32,7 @@ export default function Navbar() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const {
+    eventNotifications,
     user,
     logoutUser,
     availableCountries,
@@ -124,12 +121,8 @@ export default function Navbar() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={eventNotifications.length || 0} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -152,7 +145,14 @@ export default function Navbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: "background.neutral",
+          color: "text.primary",
+          boxShadow: "none",
+        }}
+      >
         <Toolbar>
           <Stack direction={"row"} alignItems={"center"} mr={2}>
             <IconButton
@@ -177,7 +177,6 @@ export default function Navbar() {
             <Autocomplete
               disablePortal
               disableClearable
-              autoHighlight
               value={selectedCountryOption}
               sx={{ width: 300 }}
               size="small"
@@ -216,12 +215,11 @@ export default function Navbar() {
 
             {user ? (
               <>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
+                <IconButton size="large" color="inherit">
+                  <Badge
+                    badgeContent={eventNotifications.length || 0}
+                    color="error"
+                  >
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -235,8 +233,8 @@ export default function Navbar() {
                   color="inherit"
                 >
                   <Avatar
-                    src={user.avatar}
-                    alt="user avatar"
+                    src={user.name}
+                    alt={user.name}
                     sx={{ width: 36, height: 36 }}
                   />
                 </IconButton>

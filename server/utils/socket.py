@@ -47,12 +47,17 @@ def delete_user_by_socket_id(socket_id):
             users.remove(user)
 
 
-def send_event_notification(user_id, event):
+def send_event_notification(user_id, event, job_id):
     user = get_user_by_user_id(user_id)
     if user is not None:
-        socketio.emit("event_notification", event, room=user.socket_id)
+        socketio.emit("event_notification", {"event":event, "job_id":job_id}, room=user.socket_id)
 
 
 @socketio.on('joined')
 def joined(user):
     add_user(socket_id=request.sid, user_id=user["id"])
+
+
+@socketio.on('disconnect')
+def disconnect():
+    delete_user_by_socket_id(socket_id=request.sid)

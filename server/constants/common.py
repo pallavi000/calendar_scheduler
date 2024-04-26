@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=".env.local")
+load_dotenv()
 
 
 class COMMON:
@@ -11,6 +11,7 @@ class COMMON:
         ME = "/me"
         EVENT = "/"
         EVENT_WITH_ID = "/<int:id>"
+        EVENT_SCHEDULE_WITH_ID = "/schedule/<string:job_id>"
 
     class JWT:
         EXPIRES_IN = os.environ["JWT_EXPIRES_IN"]

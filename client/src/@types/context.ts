@@ -4,6 +4,7 @@ import {
   TThemeMode,
   TTimezone,
 } from "./common";
+import { TEvent } from "./events";
 import { TUser } from "./user";
 
 export type TGlobalContextStates = {
@@ -19,4 +20,5 @@ export type TGlobalContextStates = {
   setSelectedCountry: (country: TCountryCode) => void;
   selectedTimezone: TTimezone;
   setSelectedTimezone: (timezone: TTimezone) => void;
+  eventNotifications: TEvent[];
 };

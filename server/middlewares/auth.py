@@ -38,6 +38,6 @@ def auth_middleware(f):
                 "code": 500,
             }, 500
         g.current_user = current_user.serialize()
-        return f(*args, *kawargs)
+        return f(*args, **kawargs)
 
     return decorated

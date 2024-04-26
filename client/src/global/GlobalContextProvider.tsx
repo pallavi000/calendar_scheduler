@@ -24,12 +24,13 @@ import { useQuery } from "react-query";
 import { io } from "socket.io-client";
 import { TEvent } from "../@types/events";
 import { eventNotification } from "../components/Notification";
+import { clearEventNotificationApiService } from "../services/eventApiService";
 
 export const GlobalContext = createContext<TGlobalContextStates>({
   token: "",
-  setToken: (value: string) => {},
+  setToken: () => {},
   user: undefined,
-  themeMode: "dark",
+  themeMode: "light",
   toggleThemeMode: () => {},
   logoutUser: () => {},
   availableCountries: [],
@@ -38,6 +39,7 @@ export const GlobalContext = createContext<TGlobalContextStates>({
   setSelectedCountry: () => {},
   selectedTimezone: DEFAULT_TIMEZONE,
   setSelectedTimezone: () => {},
+  eventNotifications: [],
 });
 
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -49,7 +51,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
   const [token, setToken] = useLocalStorage(LOCAL_STORAGE_TOKEN, "");
   const [themeMode, setThemeMode] = useLocalStorage<TThemeMode | "">(
     THEME_MODE,
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    "light"
   );
   const [availableCountries, setAvailableCountries] = useState<
     TCountryResponse[]
@@ -80,6 +82,14 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     },
   });
 
+  const handleClearNotification = async (job_id: string) => {
+    try {
+      await clearEventNotificationApiService(job_id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     let socket: any;
     if (user) {
@@ -87,10 +97,15 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
       socket.on("connect", (conn: any) => {
         socket.emit("joined", user);
       });
-      socket.on("event_notification", (event: TEvent) => {
-        setEventNotifications((prev) => [...prev, event]);
-        eventNotification(`"${event.title}" named event has started!`);
-      });
+      socket.on(
+        "event_notification",
+        ({ event, job_id }: { event: TEvent; job_id: string }) => {
+          setEventNotifications((prev) => [...prev, event]);
+          eventNotification(`"${event.title}" named event has started!`, () =>
+            handleClearNotification(job_id)
+          );
+        }
+      );
     }
     return () => {
       socket?.disconnect();
@@ -127,6 +142,7 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
   return (
     <GlobalContext.Provider
       value={{
+        eventNotifications,
         token,
         setToken,
         user,

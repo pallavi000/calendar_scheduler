@@ -2,13 +2,16 @@ import { Button, IconButton } from "@mui/material";
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 import CloseIcon from "@mui/icons-material/Close";
 
-const action = (snackbarId: any) => (
+const action = (snackbarId: any, handleClick?: () => void) => (
   <IconButton
     aria-label="delete"
     size="small"
     color="inherit"
     onClick={() => {
       closeSnackbar(snackbarId);
+      if (handleClick) {
+        handleClick();
+      }
     }}
   >
     <CloseIcon fontSize="inherit" />
@@ -49,11 +52,14 @@ export function apiErrorNotification(error: any) {
   });
 }
 
-export function eventNotification(msg = "Success!") {
+export function eventNotification(
+  msg = "Success!",
+  handleCloseClick: () => void
+) {
   enqueueSnackbar(msg, {
     variant: "info",
-    action,
-    autoHideDuration: null,
+    action: (key) => action(key, handleCloseClick),
+    autoHideDuration: 60000 - 1000,
     anchorOrigin: {
       vertical: "bottom",
       horizontal: "right",

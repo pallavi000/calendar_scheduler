@@ -7,7 +7,7 @@ from models import db, User, Event
 from routes import init_route
 from utils import create_socket_app, socketio
 
-load_dotenv(dotenv_path=".env.local")
+load_dotenv()
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024
@@ -27,7 +27,7 @@ def handle_preflight():
 db.init_app(app)
 # routes
 init_route(app)
-
+# database
 with app.app_context():
     db.create_all()
 
@@ -35,4 +35,4 @@ with app.app_context():
 create_socket_app(app)
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", debug=True)
+    socketio.run(app, host="0.0.0.0", debug=os.environ["DEBUG"])

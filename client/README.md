@@ -1,30 +1,62 @@
-# React + TypeScript + Vite
+# Calendar Schedule Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a frontend application built with React, TypeScript, and Vite that interacts with the Calendar Schedule API.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Create, view and manage your schedule and events
+- User-friendly interface
+- Responsive design
+- Event Notification
 
-## Expanding the ESLint configuration
+## Requirements
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Node.js
+- npm or Yarn
 
-- Configure the top-level `parserOptions` property like this:
+## Installation
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
+1. Clone the repository:
+```commandline
+git clone https://github.com/pallavi000/calendar_scheduler.git
+```
+2. Navigate to the project directory:
+```commandline
+cd client
+```
+3. Install dependencies:
+```commandline
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+## Configuration
+1. rename env.example file to .env 
+2. Before running the frontend, make sure to configure the API endpoint in the `.env` file:
+
+
+## Usage
+
+1. Start the development server:
+```commandline
+npm run dev
+```
+2. Open your browser and navigate to `http://localhost:5173` to view the application.
+
+
+## Build
+
+To build the production-ready assets, run:
+```commandline
+npm run build
+```
+
+The optimized files will be generated in the `dist` directory.
+
+## Contributing
+
+Contributions are welcome! If you would like to contribute to this project, please fork the repository and submit a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

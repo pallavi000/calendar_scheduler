@@ -16,3 +16,7 @@ export function updateEventApiService(id: number, newData: TNewEventFormData) {
 export function deleteEventApiService(id: number) {
   return axiosInstance.delete(`/events/${id}`);
 }
+
+export function clearEventNotificationApiService(id: string) {
+  return axiosInstance.delete(`/events/schedule/${id}`);
+}
