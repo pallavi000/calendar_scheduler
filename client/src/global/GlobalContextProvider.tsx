@@ -114,6 +114,9 @@ function GlobalContextProvider({ children }: React.PropsWithChildren) {
     let socket: any;
     if (user) {
       socket = io("http://127.0.0.1:5000", {});
+      socket.on("connect", () => {
+        socket.emit("joined", user);
+      });
       socket.on(
         "event_notification",
         ({ event, job_id }: { event: TEvent; job_id: string }) => {

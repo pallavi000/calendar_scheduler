@@ -261,14 +261,14 @@ export default function Navbar() {
                 <Button
                   sx={{ color: "text.primary" }}
                   variant="outlined"
-                  href="/auth/sign-in"
+                  href="/sign-in"
                 >
                   Login
                 </Button>
                 <Button
                   color="success"
                   variant="text"
-                  href="/auth/register"
+                  href="/register"
                   endIcon={<DoubleArrowIcon />}
                 >
                   Sign up
